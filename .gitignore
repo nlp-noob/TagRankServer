@@ -2,3 +2,5 @@ flatten_bak/
 data/
 __pycache__/
 data.zip
+pages/config.js
+pages/config1.js
