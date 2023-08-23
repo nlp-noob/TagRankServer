@@ -10,9 +10,15 @@ def main():
         "debug": 12899
     }
     with open("pages/config1.js", "w") as fout:
-        fout.write("var config = \{ apiUrl: \"http://192.168.12.225:{}/api/v0/tag_rank/\"\}".format(mode_to_port[args.start_mode]))
+        fout.writelines(
+                ["var config = { apiUrl:", 
+                 " \"http://192.168.12.225:{}".format(mode_to_port[args.start_mode]), 
+                 "/api/v0/tag_rank/\"}"])
     with open("pages/config.js", "w") as fout:
-        fout.write("var config = \{ apiUrl: \"http://192.168.12.225:{}/api/v0/tag_rank/\"\}".format(mode_to_port[args.start_mode]))
+        fout.writelines(
+                ["var config = { apiUrl:", 
+                 " \"http://192.168.12.225:{}".format(mode_to_port[args.start_mode]), 
+                 "/api/v0/tag_rank/\"}"])
 
 
 if __name__ == "__main__":
