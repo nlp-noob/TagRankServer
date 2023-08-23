@@ -95,7 +95,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", help="", type=str, default="./data/splits/flatten/")
     parser.add_argument("--info_dict_path", help="", type=str, default="./data/splits/tag_info_dict.json")
-    parser.add_argument("--out_path", help="", type=str, default="tagged_data.json")
+    parser.add_argument("--out_path", help="", type=str, default="./data/tagged_data.json")
     parser.add_argument("--user_info_path", help="", type=str, default="./data/user_dict.json")
     parser.add_argument("--add_max_length", help="", type=int, default=5000) 
     parser.add_argument("--empty_out_dir", help="", type=str, default="./data/empty/")
