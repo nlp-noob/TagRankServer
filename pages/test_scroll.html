@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scrollable Divs</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .scrollable-container {
+      display: flex;
+    }
+
+    .scrollable-content {
+      flex-grow: 1;
+      overflow: auto;
+    }
+
+    .fixed-div {
+      position: sticky;
+      top: 0;
+      background-color: #f2f2f2;
+      padding: 10px;
+    }
+
+    #div1.fixed {
+      position: fixed;
+      left: 0;
+    }
+
+    #div2.fixed {
+      position: fixed;
+      right: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="scrollable-container">
+    <div class="scrollable-content" id="div1">
+      <div class="fixed-div">
+        <h2>Div 1 - Fixed</h2>
+        <p>This is a fixed div.</p>
+      </div>
+      <div class="content">
+        <h2>Scrollable Content 1</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <!-- Add more content here -->
+      </div>
+    </div>
+    <div class="scrollable-content" id="div2">
+      <div class="fixed-div">
+        <h2>Div 2 - Fixed</h2>
+        <p>This is a fixed div.</p>
+      </div>
+      <div class="content">
+        <h2>Scrollable Content 2</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <!-- Add more content here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const div1 = document.getElementById('div1');
+    const div2 = document.getElementById('div2');
+
+    window.addEventListener('scroll', function() {
+      const div1Rect = div1.getBoundingClientRect();
+      const div2Rect = div2.getBoundingClientRect();
+
+      if (div1Rect.top <= 0 && div1Rect.bottom >= window.innerHeight) {
+        div1.classList.add('fixed');
+      } else {
+        div1.classList.remove('fixed');
+      }
+
+      if (div2Rect.top <= 0 && div2Rect.bottom >= window.innerHeight) {
+        div2.classList.add('fixed');
+      } else {
+        div2.classList.remove('fixed');
+      }
+    });
+  </script>
+</body>
+</html>
+

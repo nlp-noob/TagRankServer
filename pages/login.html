@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f1f1;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            margin-right: 20px;
+            margin-left: 20px;
+            margin-top: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-group button:hover {
+            background-color: #45a049;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter your username" onkeydown="validKeyPress(event)" onchange="validChange(this)">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password" onkeydown="validKeyPress(event)" onchange="validChange(this)">
+        </div>
+        <div class="form-group">
+            <button onclick="adminLogin()">Login As Admin</button>
+        </div>
+        <div class="form-group">
+            <button onclick="login()">Login</button>
+            <select id="mode-select" class="text-select">
+                <option value="legacy">Legacy</option>
+                <option value="order">Order</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <button onclick="viewLogin()">Login For View</button>
+        </div>
+        <div id="error-message" class="error-message"></div>
+    </div>
+    <script src="config1.js">
+    </script>
+    <script>
+        function validChange(input){
+            var regex = /^[a-zA-Z0-9]+$/;
+            var isValid = regex.test(input.value);
+            if (!isValid) {
+                alert("Only alphabets and numbers are allowed!");
+                input.value = "";
+            }
+        }
+        function validKeyPress(event) {
+            var key = event.key;
+            var regex = /^[a-zA-Z0-9]+$/;
+            var isValid = regex.test(key);
+            if (!isValid) {
+                event.preventDefault();
+            }
+        }
+        function login() {
+            var input_username = document.getElementById("username").value;
+            var input_password = document.getElementById("password").value;
+  	        var requestData = {
+	        	mode: "user_login",
+                user_name: input_username,
+                user_password: input_password
+	        };
+	        var requestOptions = {
+	        	method: "POST",
+	        	headers: {
+	        		"Content-Type": "application/json"
+	        	},
+	        	body: JSON.stringify(requestData)
+	        };
+            fetch(config.apiUrl, requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    // Process the API response and display results
+                    var errorMessage = document.getElementById("error-message");
+                    if (data.login_signup_result == "p"){
+                        // Log in success
+                        var mode_select = document.getElementById("mode-select");
+                        var mode_selected = mode_select.value
+                        if (mode_selected == "legacy") {
+                            var login_href = "/file_list.html?user_name_in_use=" + input_username;
+                            window.location.assign(login_href);
+                        } else if (mode_selected == "order"){
+                            var login_href = "/order_mode_file_list.html?user_name=" + input_username;
+                            window.location.assign(login_href);
+                        }
+                    } else if (data.login_signup_result == "n_p"){
+                        errorMessage.textContent = "Wrong Password!!!!"
+                    } else if (data.login_signup_result == "n_u"){
+                        errorMessage.textContent = "User Doesn't Exist!!!!"
+                    } else {
+                        errorMessage.textContent = "Error!!!"
+                    }
+                })
+                .catch(error => {
+                    console.log("Error", error);
+                });
+        }
+        function viewLogin() {
+            var input_username = document.getElementById("username").value;
+            var input_password = document.getElementById("password").value;
+  	        var requestData = {
+	        	mode: "user_login",
+                user_name: input_username,
+                user_password: input_password
+	        };
+	        var requestOptions = {
+	        	method: "POST",
+	        	headers: {
+	        		"Content-Type": "application/json"
+	        	},
+	        	body: JSON.stringify(requestData)
+	        };
+            fetch(config.apiUrl, requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    // Process the API response and display results
+                    var errorMessage = document.getElementById("error-message");
+                    if (data.login_signup_result == "p"){
+                        // Log in success
+                        login_href = "/view_mode_user_list.html";
+                        window.location.assign(login_href)
+                    } else if (data.login_signup_result == "n_p"){
+                        errorMessage.textContent = "Wrong Password!!!!"
+                    } else if (data.login_signup_result == "n_u"){
+                        errorMessage.textContent = "User Doesn't Exist!!!!"
+                    } else {
+                        errorMessage.textContent = "Error!!!"
+                    }
+                })
+                .catch(error => {
+                    console.log("Error", error);
+                });
+        }
+        function adminLogin() {
+            var input_username = document.getElementById("username").value;
+            var input_password = document.getElementById("password").value;
+  	        var requestData = {
+	        	mode: "admin_login",
+                user_name: input_username,
+                user_password: input_password
+	        };
+	        var requestOptions = {
+	        	method: "POST",
+	        	headers: {
+	        		"Content-Type": "application/json"
+	        	},
+	        	body: JSON.stringify(requestData)
+	        };
+            fetch(config.apiUrl, requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    // Process the API response and display results
+                    var errorMessage = document.getElementById("error-message");
+                    if (data.login_signup_result == "p"){
+                        // Log in success
+                        login_href = "/admin_user_list.html";
+                        window.location.assign(login_href)
+                    } else if (data.login_signup_result == "n_p"){
+                        errorMessage.textContent = "Wrong Password!!!!";
+                    } else if (data.login_signup_result == "n_u"){
+                        errorMessage.textContent = "User Doesn't Exist!!!!";
+                    } else if (data.login_signup_result == "n_a"){
+                        errorMessage.textContent = "You are not admin!!!!";
+                    } else {
+                        errorMessage.textContent = "Error!!!";
+                    }
+                })
+                .catch(error => {
+                    console.log("Error", error);
+                });
+        }
+    </script>
+</body>
+</html>
+

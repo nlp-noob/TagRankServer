@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body style="background-color: #F0EFF4;">
+    <div class="title-container">
+        <h1> Rank Filtering tagging v1</h1>
+    </div>
+    <div class="scroll-button-container">
+        <div class="dialog-button-container">
+            <button class="scroll-dialog-button" onclick="document.getElementById('dialogdiv').scrollTop=0;">To Top</button>
+            <button class="scroll-dialog-button" onclick="document.getElementById('dialogdiv').scrollTop=document.getElementById('dialogdiv').scrollHeight;">To Bottom</button>
+            <button class="scroll-resp-button" onclick="document.getElementById('respdiv').scrollTop=0;">To Top</button>
+            <button class="scroll-resp-button" onclick="document.getElementById('respdiv').scrollTop=document.getElementById('respdiv').scrollHeight;">To Bottom</button>
+        </div>
+    </div>
+    <div class="main-container">
+        <div class="container-left">
+            <div id="dialogdiv" class="dialog-pane">
+            </div>
+        </div>
+        <div class="container-right">
+            <div id="respdiv" class="resp-pane">
+            </div>
+        </div>
+    </div>
+</body>
+<style>
+.scroll-dialog-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    color: #EE9A00;
+    background-color #4CAF50;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+.show-resp-tagged-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    color: #EE9A00;
+    background-color #EAEAEF;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+.show-resp-untagged-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    color: #EE9A00;
+    background-color #FDE6E0;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+.skip-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    color: #EE9A00;
+    background-color #4CAF50;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+.scroll-resp-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    color: #EE9A00;
+    background-color #4CAF50;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+    float: right;
+    right: 0;
+}
+.title-container{
+    height: 10%;
+    width: 100%;
+}
+.scroll-button-container{
+    height: 10%;
+    width: 100%;
+}
+.dialog-button-container{
+    height: 100%;
+    width: 50%;
+}
+.resp-button-container{
+    height: 100%;
+    width: 50%;
+}
+.skip-button-container{
+    height: 10%;
+    width: 100%
+}
+.main-container{
+    position: absolute;
+    height: 80%;
+    width:100%;
+}
+.container-left{
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    overflow: hidden;
+}
+.container-right{
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    overflow: hidden;
+    float: right;
+    right: 0;
+}
+.dialog-pane{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+}
+.resp-pane{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+}
+.advisor-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #8CA9D3;
+    align-self: flex-start;
+}
+.user-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #EBC999;
+    color: #000;
+    align-self: flex-end;
+}
+.advisor-msg-hidden {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #8CA9D3;
+    align-self: flex-start;
+	opacity: 0.4;
+}
+.user-msg-hidden {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #EBC999;
+    color: #000;
+    align-self: flex-end;
+	opacity: 0.4;
+}
+.origin-resp-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #F26659;
+    color: #000;
+    align-self: flex-end;
+}
+.positive-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color:  #C7EDCC;
+    color: #000;
+}
+.negative-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #FDE6E0;
+    color: #000;
+}
+.medium-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #EAEAEF;
+    color: #000;
+}
+.keyword-tag {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 3px;
+    padding: 2px;
+    border-radius: 10px;
+    background-color: #9C66Ef;
+    color: #000;
+}
+.radio-group {
+    display: flex;
+    align-items: center;
+}
+.radio-input {
+    cursor: pointer;
+    display: inline-block;
+    transform: scale(2.0);
+    margin-right: 7px;
+}
+.radio-label {
+    margin-right: 10px;
+    display: inline-block;
+}
+.next-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    color: #EE9A00;
+    background-color #4CAF50;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+.next-button:hover {
+    background-color: #45a049;
+}
+
+
+</style>
+<script src="config1.js">
+</script>
+<script>
+    function isInArray(element, element_list){
+        for (var i = 0; i < element_list.length; i++) {
+            if (element == element_list[i]){
+                return true;
+            }
+        }
+        return false;
+    }
+    function refreshRespList(msg_inex){
+        var requestData = {
+            mode: "admin_get_msg_index_resp_list",
+            show_index_data_to_get: show_data_index,
+            user_name: user_name,
+            msg_index: msg_index
+        }
+        var requestOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestData)
+        };
+        fetch(config.apiUrl, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                var resp_div = document.getElementById("respdiv");
+                resp_div.innerHTML = "";
+                resp_list = data.resp_list;
+                for (var i=0; i < resp_list.length; i++) {
+                    (function(resp_text){
+                        var resp = resp_list[i];
+                        var resp_type = resp[0];
+                        var resp_text = resp[1];
+                        var radio_group = document.createElement("div");
+                        radio_group.className = "radio-group";
+                        var p_radio = document.createElement("input");
+                        var p_radio_label = document.createElement("label");
+                        var m_radio = document.createElement("input");
+                        var m_radio_label = document.createElement("label");
+                        var n_radio = document.createElement("input");
+                        var n_radio_label = document.createElement("label");
+                        p_radio.type = "radio";
+                        m_radio.type = "radio";
+                        n_radio.type = "radio";
+                        p_radio.name = "resp" + i;
+                        m_radio.name = "resp" + i;
+                        n_radio.name = "resp" + i;
+                        p_radio.id = "p_radio" + i;
+                        m_radio.id = "m_radio" + i;
+                        n_radio.id = "n_radio" + i;
+                        p_radio.className = "radio-input";
+                        m_radio.className = "radio-input";
+                        n_radio.className = "radio-input";
+                        p_radio_label.className = "radio-label";
+                        m_radio_label.className = "radio-label";
+                        n_radio_label.className = "radio-label";
+	            		p_radio_label.textContent = "p";
+	            		m_radio_label.textContent = "m";
+	            		n_radio_label.textContent = "n";
+                        p_radio_label.htmlFor = "p_radio" + i;
+                        m_radio_label.htmlFor = "m_radio" + i;
+                        n_radio_label.htmlFor = "n_radio" + i;
+                        if (resp_type == "positive-msg") {
+                            p_radio.checked = true;
+                        } else if (resp_type == "negative-msg") {
+                            n_radio.checked = true;
+                        } else if (resp_type == "medium-msg") {
+                            m_radio.checked = true;
+                        }
+                        radio_group.appendChild(p_radio);
+                        radio_group.appendChild(p_radio_label);
+                        radio_group.appendChild(m_radio);
+                        radio_group.appendChild(m_radio_label);
+                        radio_group.appendChild(n_radio);
+                        radio_group.appendChild(n_radio_label);
+                        var paragraph = document.createElement("div");
+                        paragraph.className = resp_type;
+                        paragraph.textContent = resp_text;
+                        paragraph.id = "para_" + i;
+                        radio_group.appendChild(paragraph);
+                        resp_div.appendChild(radio_group);
+                    })(resp_list[i][1]);
+                }
+            })
+            .catch(error => {
+                console.log("Error", error)
+            });
+    }
+    function refreshDialogListSelectEffect(msg_index){
+        msg_index = parseInt(msg_index, 10);
+        var i = 0;
+        while(true){
+            var msg_paragraph = document.getElementById("msg_" + i);
+            if (msg_paragraph == null){
+                break;
+            } else if (i == msg_index) {
+                msg_paragraph.className = "origin-resp-msg";
+            } else if (i > msg_index) {
+                if (msg_paragraph.className == "advisor-msg" || msg_paragraph.className == "origin-resp-msg"){
+                    msg_paragraph.className = "advisor-msg-hidden";
+                } else if (msg_paragraph.className == "user-msg"){
+                    msg_paragraph.className = "user-msg-hidden";
+                }
+            } else {
+                // i < msg_index
+                if (msg_paragraph.className == "advisor-msg-hidden" || msg_paragraph.className == "origin-resp-msg"){
+                    msg_paragraph.className = "advisor-msg";
+                } else if (msg_paragraph.className == "user-msg-hidden"){
+                    msg_paragraph.className = "user-msg";
+                }
+            }
+            i++;
+        }
+    }
+    function getMsgIndex(){
+        var i = 0;
+        while(true){
+            var msg_paragraph = document.getElementById("msg_" + i);
+            if (msg_paragraph == null){
+                return null;
+            } else if (msg_paragraph.className == "origin-resp-msg") {
+                return i;
+            }
+            i++;
+        }
+    }
+    function refreshDialogList(dialog_list, tag_info_list, msg_index_list) {
+        var dialog_div = document.getElementById("dialogdiv");
+        dialog_div.innerHTML = "";
+        var resp_div = document.getElementById("respdiv");
+        resp_div.innerHTML = "";
+        for (var i = 0; i < dialog_list.length; i++) {
+            (function(dialog_text){
+                var msg = dialog_list[i];
+                var msg_character = msg[0];
+                var msg_text = msg[1];
+                var paragraph = document.createElement("div");
+                paragraph.className = msg_character;
+                paragraph.textContent = msg_text;
+                paragraph.id = "msg_" + i;
+                dialog_div.appendChild(paragraph)
+                if (msg_character == "advisor-msg" & isInArray(i, msg_index_list)){
+                    var button = document.createElement("button");
+                    button.textContent = "Show";
+                    button.className = "show-resp-untagged-button";
+                    button.id = "button_" + i;
+                    button.addEventListener("click", function(event){
+                                button_id = event.srcElement.id;
+                                msg_index = button_id.split("_")[1];
+                                refreshRespList(msg_index);
+                                refreshDialogListSelectEffect(msg_index);
+                            });
+                    dialog_div.appendChild(button)
+                }
+                var br = document.createElement("br");
+                dialog_div.appendChild(br);
+            })(dialog_list[i][1]);
+        }
+        for (var i = 0; i < tag_info_list.length; i++) {
+            tag_info = tag_info_list[i];
+            msg_index = msg_index_list[i];
+            if (tag_info.tagger != null){
+                var tagged_item_button = document.getElementById("button_" + msg_index);
+                tagged_item_button.className = "show-resp-tagged-button";
+            }
+        }
+        var previous_button = document.createElement("a");
+        previous_button.className = "next-button";
+        previous_button.textContent = "Previous Order";
+        previous_button.onclick = refreshPagePrevious;
+        dialog_div.appendChild(previous_button);
+        var next_button = document.createElement("a");
+        next_button.className = "next-button";
+        next_button.textContent = "Next Order";
+        next_button.onclick = refreshPageNext;
+        dialog_div.appendChild(next_button);
+
+        // next_button.href = "/tag.html?show_data_index=" + (parseInt(show_data_index, 10) + 1) + "&user_name_in_use=" + user_name_in_use;
+        // next_button.href = "/tag.html?show_data_index=" + (parseInt(show_data_index, 10) - 1) + "&user_name_in_use=" + user_name_in_use;
+    }
+    function refreshPageNext(){
+        show_data_index = show_data_index + 1;
+        var url = new URL(window.location.href);
+        var params = new URLSearchParams(url.search);
+        params.set("show_data_index", show_data_index);
+        url.search = params.toString();
+        window.history.pushState({}, "", url.href);
+        var requestData = {
+            mode: "admin_get_show_index_data",
+            user_name: user_name,
+            show_index_data_to_get: show_data_index
+        }
+        var requestOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestData)
+        };
+        fetch(config.apiUrl, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                var resp_div = document.getElementById("respdiv");
+                resp_div.innerHTML = "";
+                refreshDialogList(data.dialog_list, data.tag_info_list, data.msg_index_list);
+            }).catch(error => {
+                console.log("Error", error);
+            });
+    }
+    function refreshPagePrevious(){
+        show_data_index = show_data_index - 1;
+        if (show_data_index < 0){
+            show_data_index = 0;
+        }
+        var url = new URL(window.location.href);
+        var params = new URLSearchParams(url.search);
+        params.set("show_data_index", show_data_index);
+        url.search = params.toString();
+        window.history.pushState({}, "", url.href);
+        var requestData = {
+            mode: "admin_get_show_index_data",
+            user_name: user_name,
+            show_index_data_to_get: show_data_index
+        }
+        var requestOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestData)
+        };
+        fetch(config.apiUrl, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                var resp_div = document.getElementById("respdiv");
+                resp_div.innerHTML = "";
+                refreshDialogList(data.dialog_list, data.tag_info_list, data.msg_index_list);
+            }).catch(error => {
+                console.log("Error", error);
+            });
+    }
+    var urlParams = new URLSearchParams(window.location.search);
+    var show_data_index =  parseInt(urlParams.get("show_data_index"), 10);
+    var user_name =  urlParams.get("user_name");
+    var page_index = urlParams.get("page_index")
+    var requestData = {
+        mode: "admin_get_show_index_data",
+        show_index_data_to_get: show_data_index,
+        user_name: user_name
+    }
+    var requestOptions = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(requestData)
+    };
+    fetch(config.apiUrl, requestOptions)
+        .then(response => response.json())
+        .then(data => {
+            refreshDialogList(data.dialog_list, data.tag_info_list, data.msg_index_list);
+        })
+        .catch(error => {
+            console.log("Error", error)
+        });
+    // var dialog_list = [["user-msg", "Hi"], ["advisor-msg", "hello how can I help you?"], ["user-msg", "I wonder if my ex will come back to me"]];
+    // var resp_list = [["positive-msg", "Good, I need your birthdate"], ["positive-msg", "I want some personal info"], ["positive-msg", "of course"], ["negative-msg", "nono"], ["negative-msg", "fine"], ["negative-msg", "I dont"]];
+</script>
+</html>
+

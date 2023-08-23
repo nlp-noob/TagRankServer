@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body style="background-color: #F0EFF4;">
+    <div class="title-container">
+        <h1> Rank Filtering tagging v1</h1>
+    </div>
+    <div>
+        <h3 id="tag_process"></h3>
+    </div>
+    <div class="scroll-button-container">
+        <div class="dialog-button-container">
+            <button class="scroll-dialog-button" onclick="document.getElementById('dialogdiv').scrollTop=0;">To Top</button>
+            <button class="scroll-dialog-button" onclick="document.getElementById('dialogdiv').scrollTop=document.getElementById('dialogdiv').scrollHeight;">To Bottom</button>
+            <button class="scroll-resp-button" onclick="document.getElementById('respdiv').scrollTop=0;">To Top</button>
+            <button class="scroll-resp-button" onclick="document.getElementById('respdiv').scrollTop=document.getElementById('respdiv').scrollHeight;">To Bottom</button>
+            <button class="scroll-resp-button" onclick="allSetToN()">Set To N</button>
+        </div>
+    </div>
+    <div class="skip-button-container">
+        <button class="skip-button" onclick="skip_and_next()">Skip</button>
+    </div>
+    <div class="main-container">
+        <div class="container-left">
+            <div id="dialogdiv" class="dialog-pane">
+            </div>
+        </div>
+        <div class="container-right">
+            <div id="respdiv" class="resp-pane">
+            </div>
+        </div>
+    </div>
+</body>
+<style>
+.scroll-dialog-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    color: #EE9A00;
+    background-color #4CAF50;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+.skip-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    color: #EE9A00;
+    background-color #4CAF50;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+.scroll-resp-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    color: #EE9A00;
+    background-color #4CAF50;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+    float: right;
+    right: 0;
+}
+.title-container{
+    height: 10%;
+    width: 100%;
+}
+.scroll-button-container{
+    height: 10%;
+    width: 100%;
+}
+.dialog-button-container{
+    height: 100%;
+    width: 50%;
+}
+.resp-button-container{
+    height: 100%;
+    width: 50%;
+}
+.skip-button-container{
+    height: 10%;
+    width: 100%
+}
+.main-container{
+    position: absolute;
+    height: 80%;
+    width:100%;
+}
+.container-left{
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    overflow: hidden;
+}
+.container-right{
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    overflow: hidden;
+    float: right;
+    right: 0;
+}
+.dialog-pane{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+}
+.resp-pane{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+}
+.advisor-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #8CA9D3;
+    align-self: flex-start;
+}
+.user-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #EBC999;
+    color: #000;
+    align-self: flex-end;
+}
+.origin-resp-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #F26659;
+    color: #000;
+    align-self: flex-end;
+}
+.positive-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color:  #C7EDCC;
+    color: #000;
+}
+.negative-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #FDE6E0;
+    color: #000;
+}
+.medium-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #EAEAEF;
+    color: #000;
+}
+.keyword-tag {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 3px;
+    padding: 2px;
+    border-radius: 10px;
+    background-color: #9C66Ef;
+    color: #000;
+}
+.radio-group {
+    display: flex;
+    align-items: center;
+}
+.radio-input {
+    cursor: pointer;
+    display: inline-block;
+    transform: scale(2.0);
+    margin-right: 7px;
+}
+.radio-label {
+    margin-right: 10px;
+    display: inline-block;
+}
+.next-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    color: #EE9A00;
+    background-color #4CAF50;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+.next-button:hover {
+    background-color: #45a049;
+}
+
+
+</style>
+<script src="config1.js">
+</script>
+<script>
+    var urlParams = new URLSearchParams(window.location.search);
+    var show_data_index =  parseInt(urlParams.get("show_data_index"), 10);
+    var user_name_in_use =  urlParams.get("user_name_in_use");
+
+    if (user_name_in_use == null){
+        window.location.assign("./login.html")
+    }
+
+  	var requestData = {
+		mode: "check_user_login_today",
+        user_name: user_name_in_use
+	};
+	var requestOptions = {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(requestData)
+	};
+
+    // make post request to the api
+    fetch(config.apiUrl, requestOptions)
+        .then(response => response.json())
+        .then(data => {
+                user_login_today = data.user_login_today;
+                if (!user_login_today) {
+                    console.log("user_not_login")
+                }
+        })
+        .catch(error => {
+            console.log("Error", error);
+        });
+
+    function skip_and_next(){
+        var requestData = {
+            mode: "skip_page",
+            user_name: user_name_in_use
+        }
+        var requestOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestData)
+        };
+        fetch(config.apiUrl, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+            })
+            .catch(error => {
+                console.log("Error", error)
+            });
+        refreshPageNext();
+    }
+    function refreshTagFile(star_id, origin_resp, dialog_list, resp_list, keywords_list, show_data_index) {
+        var dialog_div = document.getElementById("dialogdiv");
+        dialog_div.innerHTML = "";
+        var resp_div = document.getElementById("respdiv");
+        resp_div.innerHTML = "";
+        for (var i = 0; i < dialog_list.length; i++) {
+            var msg = dialog_list[i];
+            var msg_character = msg[0];
+            var msg_text = msg[1];
+            var paragraph = document.createElement("div");
+            paragraph.className = msg_character;
+            paragraph.textContent = msg_text;
+            dialog_div.appendChild(paragraph)
+            var br = document.createElement("br");
+            dialog_div.appendChild(br);
+        }
+        var paragraph = document.createElement("div");
+        paragraph.className = "origin-resp-msg";
+        paragraph.textContent = origin_resp;
+        dialog_div.appendChild(paragraph)
+        var br = document.createElement("br");
+        dialog_div.appendChild(br);
+        for (var i=0; i < resp_list.length; i++) {
+            (function(resp_text){
+                var resp = resp_list[i];
+                var resp_type = resp[0];
+                var resp_text = resp[1];
+                var keywords = keywords_list[i];
+                var radio_group = document.createElement("div");
+                radio_group.className = "radio-group";
+                radio_group.id = "radio-group_" + i;
+                var p_radio = document.createElement("input");
+                var p_radio_label = document.createElement("label");
+                var m_radio = document.createElement("input");
+                var m_radio_label = document.createElement("label");
+                var n_radio = document.createElement("input");
+                var n_radio_label = document.createElement("label");
+                p_radio.type = "radio";
+                m_radio.type = "radio";
+                n_radio.type = "radio";
+                p_radio.name = "resp" + i;
+                m_radio.name = "resp" + i;
+                n_radio.name = "resp" + i;
+                p_radio.id = "p_radio" + i;
+                m_radio.id = "m_radio" + i;
+                n_radio.id = "n_radio" + i;
+                p_radio.className = "radio-input";
+                m_radio.className = "radio-input";
+                n_radio.className = "radio-input";
+                p_radio_label.className = "radio-label";
+                m_radio_label.className = "radio-label";
+                n_radio_label.className = "radio-label";
+	    		p_radio_label.textContent = "p";
+	    		m_radio_label.textContent = "m";
+	    		n_radio_label.textContent = "n";
+                p_radio_label.htmlFor = "p_radio" + i;
+                m_radio_label.htmlFor = "m_radio" + i;
+                n_radio_label.htmlFor = "n_radio" + i;
+                if (resp_type == "positive-msg") {
+                    p_radio.checked = true;
+                } else if (resp_type == "negative-msg") {
+                    n_radio.checked = true;
+                } else if (resp_type == "medium-msg") {
+                    m_radio.checked = true;
+                }
+                radio_group.appendChild(p_radio);
+                radio_group.appendChild(p_radio_label);
+                radio_group.appendChild(m_radio);
+                radio_group.appendChild(m_radio_label);
+                radio_group.appendChild(n_radio);
+                radio_group.appendChild(n_radio_label);
+                var paragraph = document.createElement("div");
+                paragraph.className = resp_type;
+                paragraph.textContent = resp_text;
+                for (var kwi=0; kwi<keywords.length; kwi++) {
+                    break;
+                    var br = document.createElement("br")
+                    keyword = keywords[kwi];
+                    var mark_item = document.createElement("mark");
+                    mark_item.className = "keyword-tag";
+                    mark_item.textContent = keyword;
+                    paragraph.appendChild(br)
+                    paragraph.appendChild(mark_item);
+                }
+                paragraph.id = "para_" + i;
+                radio_group.appendChild(paragraph);
+                resp_div.appendChild(radio_group);
+                radio_group.addEventListener("change", function(event) {
+                    checked_id = event.srcElement.id;
+                    label = checked_id.split("_")[0];
+                    index = checked_id.split("radio")[1];
+                    var changed_paragraph = document.getElementById("para_" + index);
+                    if (label == "p") {
+                        var new_style_name = "positive-msg"
+                    } else if (label == "m") {
+                        var new_style_name = "medium-msg"
+                    } else if (label == "n") {
+                        var new_style_name = "negative-msg"
+                    }
+                    paragraph.className = new_style_name;
+                    var requestData = {
+                        mode: "modify_label",
+                        modify_resp_index: index,
+                        modify_resp_tag: label,
+                        user_name: user_name_in_use
+                    }
+                    var requestOptions = {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(requestData)
+                    };
+                    fetch(config.apiUrl, requestOptions)
+                        .then(response => response.json())
+                        .then(data => {
+                        })
+                        .catch(error => {
+                            console.log("Error", error)
+                        });
+                });
+            })(resp_list[i][1]);
+        }
+        var next_button = document.createElement("a");
+        next_button.className = "next-button";
+        next_button.onclick = refreshPagePrevious;
+        next_button.textContent = "Previous Task";
+        resp_div.appendChild(next_button);
+        var next_button = document.createElement("a");
+        next_button.className = "next-button";
+        next_button.onclick = refreshPageNext;
+        next_button.textContent = "Next Task";
+        resp_div.appendChild(next_button);
+    }
+    function allSetToN(){
+        var i = 1;
+        while(true){
+            var n_radio_item = document.getElementById("n_radio" + i);
+            var n_resp_item = document.getElementById("para_" + i);
+            if (n_radio_item == null || n_resp_item == null){
+                break;
+            }
+            n_radio_item.checked = 1;
+            n_resp_item.className = "negative-msg";
+            var requestData = {
+                mode: "set_all_n_labels",
+                user_name: user_name_in_use
+            }
+            var requestOptions = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(requestData)
+            };
+            fetch(config.apiUrl, requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                })
+                .catch(error => {
+                    console.log("Error", error)
+                });
+            i++;
+        }
+    }
+    function refreshTagProcess(){
+        var requestData = {
+            mode: "get_user_tag_process",
+            user_name: user_name_in_use
+        }
+
+        var requestOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestData)
+        };
+        fetch(config.apiUrl, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                var tag_process_show_item = document.getElementById("tag_process");
+                tag_process_show_item.textContent = "tagged: " + data.tag_process.tagged + "  skipped: " + data.tag_process.skipped;
+            })
+            .catch(error => {
+                console.log("Error", error);
+            });
+    }
+    function refreshPageNext(){
+            show_data_index = show_data_index + 1;
+            var url = new URL(window.location.href);
+            var params = new URLSearchParams(url.search);
+            params.set('show_data_index', show_data_index)
+            url.search = params.toString();
+            window.history.pushState({}, '', url.href);
+            var requestData = {
+                mode: "get_show_index_data",
+                show_index_data_to_get: show_data_index,
+                user_name: user_name_in_use
+            }
+            var requestOptions = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(requestData)
+            };
+            fetch(config.apiUrl, requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    refreshTagFile(data.star_id, data.origin_resp, data.dialog_list, data.resp_list, data.keywords_list, show_data_index);
+                    refreshTagProcess();
+                })
+                .catch(error => {
+                    console.log("Error", error)
+                });
+    }
+
+    function refreshPagePrevious(){
+        show_data_index = show_data_index - 1;
+        if (show_data_index < 0){
+            show_data_index = 0;
+        }
+        var url = new URL(window.location.href);
+        var params = new URLSearchParams(url.search);
+        params.set('show_data_index', show_data_index)
+        url.search = params.toString();
+        window.history.pushState({}, '', url.href);
+        var requestData = {
+            mode: "get_show_index_data",
+            show_index_data_to_get: show_data_index,
+            user_name: user_name_in_use
+        }
+        var requestOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestData)
+        };
+        fetch(config.apiUrl, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                refreshTagFile(data.star_id, data.origin_resp, data.dialog_list, data.resp_list, data.keywords_list, show_data_index);
+                refreshTagProcess();
+            })
+            .catch(error => {
+                console.log("Error", error)
+            });
+    }
+    var requestData = {
+        mode: "get_show_index_data",
+        show_index_data_to_get: show_data_index,
+        user_name: user_name_in_use
+    }
+    var requestOptions = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(requestData)
+    };
+    fetch(config.apiUrl, requestOptions)
+        .then(response => response.json())
+        .then(data => {
+            refreshTagFile(data.star_id, data.origin_resp, data.dialog_list, data.resp_list, data.keywords_list, show_data_index);
+        })
+        .catch(error => {
+            console.log("Error", error)
+        });
+    window.addEventListener('beforeunload', function(event) {
+        // Perform your desired action here
+        // For example, displaying a confirmation dialog
+        new_href = "/tag.html?show_data_index=" + show_data_index + "&user_name_in_use=" + user_name_in_use
+        window.location.assign(new_href)
+        // event.preventDefault();
+        // event.returnValue = '';
+    });
+    refreshTagProcess();
+
+    // var dialog_list = [["user-msg", "Hi"], ["advisor-msg", "hello how can I help you?"], ["user-msg", "I wonder if my ex will come back to me"]];
+    // var resp_list = [["positive-msg", "Good, I need your birthdate"], ["positive-msg", "I want some personal info"], ["positive-msg", "of course"], ["negative-msg", "nono"], ["negative-msg", "fine"], ["negative-msg", "I dont"]];
+</script>
+</html>
+

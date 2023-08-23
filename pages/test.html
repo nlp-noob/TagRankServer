@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <h1> Test splitting </h1>
+    <div class="container">
+        <div id="dialogdiv" class="dialog-pane">
+        </div>
+        <div id="divider" class="split-pane-divider">
+        </div>
+        <div id="respdiv" class="resp-pane">
+        </div>
+    </div>
+</body>
+<style>
+.container{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+}
+.split-pane-divider {
+    width: 2%;
+    background-color: #ccc;
+}
+.dialog-pane,
+.resp-pane{
+    width: 49%;
+    height: 100%;
+    flex-direction: column;
+    overflow-y: auto;
+}
+.advisor-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #e6e6e6;
+    align-self: flex-start;
+}
+.user-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #0755f0;
+    color: #fff;
+    align-self: flex-end;
+}
+.positive-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #7cfc00;
+    color: #fff;
+}
+.negative-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f0071b;
+    color: #fff;
+}
+.medium-msg {
+    display: inline-block;
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #928484;
+    color: #fff;
+}
+.radio-group {
+    display: flex;
+    align-items: center;
+}
+.radio-input {
+    cursor: pointer;
+    display: inline-block;
+}
+.radio-label {
+    margin-right: 10px;
+    display: inline-block;
+}
+
+</style>
+<script>
+    var dialog_list = [["user-msg", "Hi"], ["advisor-msg", "hello how can I help you?"], ["user-msg", "I wonder if my ex will come back to me"]];
+    var resp_list = [["positive-msg", "Good, I need your birthdate"], ["positive-msg", "I want some personal info"], ["positive-msg", "of course"], ["negative-msg", "nono"], ["negative-msg", "fine"], ["negative-msg", "I dont"]];
+    var dialog_div = document.getElementById("dialogdiv");
+    var resp_div = document.getElementById("respdiv");
+    for (var i = 0; i < dialog_list.length; i++) {
+        var msg = dialog_list[i];
+        var msg_character = msg[0];
+        var msg_text = msg[1];
+        console.log(msg_character);
+        console.log(msg_text);
+        var paragraph = document.createElement("div");
+        paragraph.className = msg_character;
+        paragraph.textContent = msg_text;
+        dialog_div.appendChild(paragraph)
+        var br = document.createElement("br");
+        dialog_div.appendChild(br);
+    }
+    for (var i=0; i < resp_list.length; i++) {
+        (function(resp_text){
+            var resp = resp_list[i];
+            var resp_type = resp[0];
+            var resp_text = resp[1];
+            var radio_group = document.createElement("div");
+            radio_group.className = "radio-group";
+            var p_radio = document.createElement("input");
+            var p_radio_label = document.createElement("label");
+            var m_radio = document.createElement("input");
+            var m_radio_label = document.createElement("label");
+            var n_radio = document.createElement("input");
+            var n_radio_label = document.createElement("label");
+            p_radio.type = "radio";
+            m_radio.type = "radio";
+            n_radio.type = "radio";
+            p_radio.name = "resp" + i;
+            m_radio.name = "resp" + i;
+            n_radio.name = "resp" + i;
+            p_radio.id = "p_radio" + i;
+            m_radio.id = "m_radio" + i;
+            n_radio.id = "n_radio" + i;
+            p_radio.className = "radio-input";
+            m_radio.className = "radio-input";
+            n_radio.className = "radio-input";
+            p_radio_label.className = "radio-label";
+            m_radio_label.className = "radio-label";
+            n_radio_label.className = "radio-label";
+			p_radio_label.textContent = "p";
+			m_radio_label.textContent = "m";
+			n_radio_label.textContent = "n";
+            p_radio_label.htmlFor = "p_radio" + i;
+            m_radio_label.htmlFor = "m_radio" + i;
+            n_radio_label.htmlFor = "n_radio" + i;
+            if (resp_type == "positive-msg") {
+                p_radio.checked = true;
+            } else if (resp_type == "negative-msg") {
+                n_radio.checked = true;
+            }
+            radio_group.appendChild(p_radio);
+            radio_group.appendChild(p_radio_label);
+            radio_group.appendChild(m_radio);
+            radio_group.appendChild(m_radio_label);
+            radio_group.appendChild(n_radio);
+            radio_group.appendChild(n_radio_label);
+            var paragraph = document.createElement("div");
+            paragraph.className = resp_type;
+            paragraph.textContent = resp_text;
+            paragraph.id = "para_" + i;
+            radio_group.appendChild(paragraph);
+            resp_div.appendChild(radio_group);
+            radio_group.addEventListener("change", function(event) {
+                checked_id = event.srcElement.id;
+                label = checked_id.split("_")[0];
+                index = checked_id.split("radio")[1];
+                var changed_paragraph = document.getElementById("para_" + index);
+                if (label == "p") {
+                    var new_style_name = "positive-msg"
+                } else if (label == "m") {
+                    var new_style_name = "medium-msg"
+                } else if (label == "n") {
+                    var new_style_name = "negative-msg"
+                }
+                paragraph.className = new_style_name;
+            });
+        })(resp_list[i][1]);
+    }
+</script>
+</html>
+

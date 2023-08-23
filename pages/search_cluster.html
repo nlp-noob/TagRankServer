@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sentence Search</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">  
+</head>
+<body>
+  <h1>Sentence Search</h1>
+  <textarea id="searchWordsInput" rows="1" cols="100" placeholder="请输入中文词语"></textarea>
+  <button id="doSearch" onclick="searchWords()">DoSearch</button>
+  <div id="words"></div>
+  <textarea id="searchSentencesInput" rows="1" cols="100" placeholder="Enter a sentence" oninput="searchSentences()"></textarea>
+  <button onclick="searchSentences()">Show</button>
+  <div id="results"></div>
+</body>
+<script>
+    function searchWords() {
+      var searchQuery = document.getElementById("searchWordsInput").value;
+      var requestData = {
+        query: searchQuery,
+        mode: "search_dictionary"
+      };
+      var requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(requestData)
+      };
+      // Make the POST request to the API
+      fetch('http://192.168.12.225:12856/api/v0/search_sentence', requestOptions)
+        .then(response => response.json())
+        .then(data => {
+          // Process the API response and display results
+          displayWordsResult(data.word_list);
+        })
+        .catch(error => {
+          console.log('Error:', error);
+        });
+    }
+    
+    function searchSentences() {
+      var searchQuery = document.getElementById('searchSentencesInput').value;
+    
+      var requestData = {
+        query: searchQuery,
+        mode: "search_sentences"
+      };
+      var requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+      };
+      
+      // Make the POST request to the API
+      fetch('http://192.168.12.225:12856/api/v0/search_sentence', requestOptions)
+        .then(response => response.json())
+        .then(data => {
+          // Process the API response and display results
+          displaySentencesResult(data.sentence_list, data.href_list);
+        })
+        .catch(error => {
+          console.log('Error:', error);
+        });
+    }
+    
+    function displaySentencesResult(results, hrefs) {
+      var resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+    
+      for (var i = 0; i < results.length; i++) {
+    	(function(sentence) {
+        var sentence = results[i];
+        var href = hrefs[i];
+    
+        // Create a button for each sentence result
+        var button = document.createElement('button');
+        button.textContent = 'Copy';
+        button.id = "button" + i
+        button.addEventListener('click', function() {
+          // Handle the button click event
+          handleSelect(sentence);
+        });
+    
+        // Append the sentence and button to the results div
+        var paragraph = document.createElement('a');
+        paragraph.href = href
+        paragraph.id = "para" + i
+        paragraph.textContent = sentence;
+        resultsDiv.appendChild(button);
+        resultsDiv.appendChild(paragraph);
+        var br = document.createElement('br');
+        resultsDiv.appendChild(br)
+    	})(results[i])
+      }
+    }
+    
+    function displayWordsResult(words) {
+      var wordsDiv = document.getElementById("words");
+      wordsDiv.innerHTML = "";
+      for (var i = 0; i < words.length; i++) {
+        (function(word) {
+          var word = words[i];
+          var checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.id = "checkbox" + i;
+          checkbox.checked = true;
+          var paragraph = document.createElement("a");
+          paragraph.id = "para_word" + i;
+          paragraph.textContent = word;
+          wordsDiv.appendChild(checkbox);
+          wordsDiv.appendChild(paragraph);
+          var br = document.createElement('br');
+          wordsDiv.appendChild(br);
+          if (i == (words.length -1)) {
+            var add_button = document.createElement("button");
+            add_button.textContent = "Add to Search";
+            add_button.id = "add_button";
+            wordsDiv.appendChild(add_button)
+            add_button.addEventListener('click', function() {
+              // Handle the button click event
+              handleAdd();
+            });
+          }
+        })(words[i])
+      }
+    }
+    
+    function handleSelect(sentence) {
+      // Handle the selection of a sentence
+      // console.log('Selected sentence:', sentence);
+      // Create a temporary textarea element
+      var textarea = document.createElement('textarea');
+      textarea.value = sentence;
+    
+      // Set its position to be off-screen
+      textarea.style.position = 'fixed';
+      textarea.style.top = '-9999px';
+    
+      // Append the textarea to the document
+      document.body.appendChild(textarea);
+    
+      // Select and copy the text
+      textarea.select();
+      document.execCommand('copy');
+    
+      // Remove the temporary textarea
+      document.body.removeChild(textarea);
+    }
+
+    function handleAdd() {
+      var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+      var checkedIndices = Array.from(checkboxes).map(function (checkbox) {
+        return checkbox.id.split("checkbox")[1];
+      });
+      var append_string = "("
+      for (var i=0; i<checkedIndices.length; i++) {
+        checkedIndice = checkedIndices[i];
+        var word = document.getElementById("para_word" + i).textContent;
+        if (i == (checkedIndices.length - 1)) {
+          append_string = append_string + word + ")"
+        } else {
+          append_string = append_string + word + ","
+        }
+        console.log(append_string)
+      }
+      var sentence_search_input = document.getElementById("searchSentencesInput")
+      sentence_search_input.value = sentence_search_input.value + append_string
+    }
+    
+    var textarea = document.getElementById('searchSentencesInput');
+      textarea.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+        }
+    });
+    
+    var textarea = document.getElementById('searchWordsInput');
+      textarea.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+        }
+    });
+</script>
+</html>
+

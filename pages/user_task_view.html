@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Task List</title>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+
+    .task-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .task-list li {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      background-color: #fff;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .task-list li a {
+      color: #333;
+      text-decoration: none;
+    }
+
+    .task-list li:hover {
+      background-color: #f9f9f9;
+    }
+
+    .task-list li span {
+      margin-right: 10px;
+    }
+
+    .date-modified {
+      text-align: right;
+    }
+
+	.button-container {
+	  text-align: center;
+	  margin-top: 20px;
+	}
+	.button-container button {
+		margin: 0 10px;
+		padding: 10px 20px;
+		background-color: #7cfc00;
+		color #fff;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+  </style>
+</head>
+<body>
+  <h1>Task List</h1>
+  <h3 id="tagger-name"></h3>
+  <div id="page_index_save">0</div>
+  <div id="task-list-div">
+    <ul class="task-list">
+      <li>
+        <a href="#">file1.txt</a>
+        <span class="date-modified">June 1, 2023</span>
+      </li>
+      <li>
+        <a href="#">file2.pdf</a>
+        <span class="date-modified">May 28, 2023</span>
+      </li>
+      <li>
+        <a href="#">file3.jpg</a>
+        <span class="date-modified">June 5, 2023</span>
+      </li>
+      <li>
+        <a href="#">file4.docx</a>
+        <span class="date-modified">June 2, 2023</span>
+      </li>
+    </ul>
+  </div>
+  <div class="button-container">
+	<button id="previous_file_list_button">  Previous </button>
+    <button id="latest_file_list_button"> Latest </button>
+	<button id="next_file_list_button">    Next   </button>
+  </div>
+</body>
+<script src="config1.js">
+</script>
+<script>
+    var urlParams = new URLSearchParams(window.location.search);
+    var user_name = urlParams.get("user_name");
+    function refreshList(show_data_index_list, tag_info_list) {
+        var taskListDiv = document.getElementById("task-list-div");
+        taskListDiv.innerHTML = "";
+        var ulItem = document.createElement("ul");
+        ulItem.className = "task-list";
+        for (var i=0; i<show_data_index_list.length; i++) {
+            var show_data_index = show_data_index_list[i];
+            var tag_info = tag_info_list[i];
+            var liItem = document.createElement("li");
+            var hrefItem = document.createElement("a");
+            hrefItem.textContent = "Order Index: " + show_data_index;
+            hrefItem.href = "/admin_view_tag.html?show_data_index=" + show_data_index + "&user_name=" + user_name;
+            var dateItem = document.createElement("span");
+            dateItem.className = "date-modified";
+            if (Object.keys(tag_info).length >= 0){
+                if (tag_info.skipped == 1) {
+                    dateItem.textContent = "skipped";
+                } else {
+                    dateItem.textContent = tag_info.date_modified;
+                }
+            } else {
+            }
+            liItem.appendChild(hrefItem);
+            liItem.appendChild(dateItem);
+            ulItem.appendChild(liItem);
+        }
+        taskListDiv.appendChild(ulItem);
+    }
+    function changePageIndex(page_index){
+        var page_index_save = document.getElementById("page_index_save");
+        page_index_save.textContent = "" + page_index;
+    }
+    function getPageIndex(){
+        var page_index_save = document.getElementById("page_index_save");
+        var page_index = parseInt(page_index_save.textContent, 10);
+        return page_index;
+    }
+    function refresh_file_list_api(mode){
+        var refresh_page_index = getPageIndex();
+  	    var requestData = {
+            mode: mode,
+            user_name: user_name,
+            page_index: refresh_page_index
+	    };
+	    var requestOptions = {
+	    	method: "POST",
+	    	headers: {
+	    		"Content-Type": "application/json"
+	    	},
+	    	body: JSON.stringify(requestData)
+	    };
+
+        // make post request to the api
+        fetch(config.apiUrl, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                // Process the API response and display results
+                var show_data_index_list = data.show_data_index_list;
+                var tag_info_list = data.tag_info_list;
+                refreshList(show_data_index_list, tag_info_list)
+            })
+            .catch(error => {
+                console.log("Error", error);
+            });
+    }
+    var page_index = 0;
+  	var requestData = {
+		mode: "admin_get_user_task_list",
+        page_index: 0,
+        user_name: user_name
+	};
+	var requestOptions = {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(requestData)
+	};
+
+    // make post request to the api
+    fetch(config.apiUrl, requestOptions)
+        .then(response => response.json())
+        .then(data => {
+            // Process the API response and display results
+            console.log(data)
+            refreshList(data.show_data_index_list, data.tag_info_list)
+        })
+        .catch(error => {
+            console.log("Error", error);
+        });
+    var next_button = document.getElementById('next_file_list_button');
+    next_button.addEventListener('click', function() {
+      // Handle the button click event
+        var page_index = getPageIndex();
+        page_index = page_index + 1;
+        changePageIndex(page_index);
+        refresh_file_list_api("admin_get_user_task_list", page_index);
+    });
+    var previous_button = document.getElementById('previous_file_list_button');
+    previous_button.addEventListener('click', function() {
+      // Handle the button click event
+        var page_index = getPageIndex();
+        if (page_index > 0){
+            page_index = page_index - 1;
+            changePageIndex(page_index);
+        }
+        refresh_file_list_api("admin_get_user_task_list");
+    });
+    var latest_button = document.getElementById("latest_file_list_button");
+    latest_button.addEventListener("click", function() {
+        var page_index = 0;
+  	    var requestData = {
+	    	mode: "get_latest_tagged_page_index",
+            page_index: 0,
+            user_name: user_name
+	    };
+	    var requestOptions = {
+	    	method: "POST",
+	    	headers: {
+	    		"Content-Type": "application/json"
+	    	},
+	    	body: JSON.stringify(requestData)
+	    };
+
+        // make post request to the api
+        fetch(config.apiUrl, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                // Process the API response and display results
+                page_index = data.tagged_page_index;
+                changePageIndex(page_index);
+                refresh_file_list_api("admin_get_user_task_list");
+            })
+            .catch(error => {
+                console.log("Error", error);
+            });
+    });
+	
+</script>
+</html>
